@@ -5,245 +5,636 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ADI FIX MERAH V12</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/style.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #0f172a;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: #e2e8f0;
+      padding-bottom: 70px;
+    }
+    #app {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .app-header {
+      background: #1e293b;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-icon {
+      font-size: 1.8rem;
+      color: #f97316;
+    }
+    .brand-title {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    .brand-sub {
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+    .header-status {
+      background: #334155;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .header-status.online {
+      background: #065f46;
+      color: #86efac;
+    }
+    .header-status.offline {
+      background: #7f1a1a;
+      color: #fca5a5;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .app-content {
+      padding: 1rem;
+    }
+    .page {
+      display: none;
+      animation: fade 0.2s ease;
+    }
+    .page.active {
+      display: block;
+    }
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(5px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .card {
+      background: #1e293b;
+      border-radius: 1rem;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      border: 1px solid #334155;
+    }
+    .card-title {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-left: 4px solid #f97316;
+      padding-left: 12px;
+    }
+    .btn {
+      padding: 10px 16px;
+      border-radius: 2rem;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      transition: 0.2s;
+    }
+    .btn-primary {
+      background: #f97316;
+      color: #0f172a;
+    }
+    .btn-primary:hover {
+      background: #ea580c;
+    }
+    .btn-secondary {
+      background: #334155;
+      color: #e2e8f0;
+    }
+    .btn-secondary:hover {
+      background: #475569;
+    }
+    .btn-danger {
+      background: #b91c1c;
+      color: white;
+    }
+    .btn-danger:hover {
+      background: #991b1b;
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+    .flex {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .flex-1 { flex: 1; }
+    .gap-3 { gap: 12px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mt-3 { margin-top: 12px; }
+    .mt-4 { margin-top: 1rem; }
+    .text-center { text-align: center; }
+    .text-xs { font-size: 0.7rem; }
+    .text-sm { font-size: 0.85rem; }
+    .text-green-400 { color: #4ade80; }
+    .text-red-400 { color: #f87171; }
+    .text-primary { color: #f97316; }
+    .hidden { display: none; }
+    .qr-area {
+      display: flex;
+      justify-content: center;
+      margin: 1rem 0;
+      min-height: 220px;
+    }
+    .qr-image {
+      width: 200px;
+      height: 200px;
+      border-radius: 1rem;
+      background: white;
+      padding: 10px;
+    }
+    .qr-placeholder {
+      background: #0f172a;
+      border: 2px dashed #475569;
+      border-radius: 1rem;
+      padding: 2rem;
+      text-align: center;
+      color: #94a3b8;
+      width: 100%;
+    }
+    .pairing-code {
+      background: #0f172a;
+      padding: 8px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 1.2rem;
+      text-align: center;
+      margin-top: 10px;
+      letter-spacing: 2px;
+    }
+    input, textarea {
+      background: #0f172a;
+      border: 1px solid #334155;
+      padding: 10px;
+      border-radius: 12px;
+      color: white;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .tool-icon {
+      font-size: 2rem;
+    }
+    .tool-name {
+      font-size: 0.8rem;
+    }
+    .back-btn {
+      background: none;
+      border: none;
+      color: #f97316;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+    .progress-bar {
+      background: #334155;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: #f97316;
+      width: 0%;
+      height: 100%;
+    }
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      margin-bottom: 5px;
+    }
+    .app-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #1e293b;
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      border-top: 1px solid #334155;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .nav-item {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+    .nav-item.active {
+      color: #f97316;
+    }
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      border-left: 4px solid #f97316;
+      padding: 8px 16px;
+      border-radius: 2rem;
+      font-size: 0.8rem;
+      z-index: 1000;
+      display: none;
+    }
+    .alert {
+      padding: 8px;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+    .alert-success {
+      background: #064e3b;
+      color: #86efac;
+    }
+    .alert-error {
+      background: #7f1a1a;
+      color: #fca5a5;
+    }
+  </style>
 </head>
 <body>
-  <div id="app">
-    <div class="app-header">
-      <div class="header-brand">
-        <i class="fas fa-crown brand-icon"></i>
-        <div>
-          <div class="brand-title">ADI FIX MERAH</div>
-          <div class="brand-sub">V12 Dashboard</div>
-        </div>
-      </div>
-      <div id="header-wa-status" class="header-status offline">
-        <span class="dot"></span> OFFLINE
+<div id="app">
+  <div class="app-header">
+    <div class="header-brand">
+      <i class="fas fa-crown brand-icon"></i>
+      <div>
+        <div class="brand-title">ADI FIX MERAH</div>
+        <div class="brand-sub">V12 Dashboard</div>
       </div>
     </div>
-
-    <div class="app-content">
-      <!-- HOME / WA SESSION -->
-      <div id="page-home" class="page active">
-        <div class="card text-center">
-          <h2 class="card-title"><i class="fab fa-whatsapp text-green-400"></i> Koneksi WhatsApp</h2>
-          
-          <div class="qr-area">
-            <img id="qr-image" src="" class="qr-image hidden" alt="QR Code">
-            <div id="qr-placeholder" class="qr-placeholder">
-              <i class="fas fa-qrcode"></i>
-              <p>Tap tombol di bawah untuk menghubungkan</p>
-            </div>
-          </div>
-          
-          <button class="btn btn-primary mb-3" onclick="connectWA()">
-            <i class="fas fa-plug"></i> Hubungkan via QR
-          </button>
-          
-          <div class="flex gap-3">
-            <input type="text" id="pairing-phone" placeholder="628xxxxxxxxxx" class="flex-1">
-            <button class="btn btn-secondary flex-1" onclick="getPairing()">Pairing</button>
-          </div>
-          
-          <div id="pairing-result" class="pairing-code hidden"></div>
-        </div>
-        
-        <button class="btn btn-danger" onclick="disconnectWA()">
-          <i class="fas fa-power-off"></i> Putuskan Koneksi
-        </button>
-      </div>
-
-      <!-- TOOLS MENU -->
-      <div id="page-tools" class="page">
-        <h2 class="card-title"><i class="fas fa-tools text-primary"></i> Peralatan</h2>
-        <div class="grid-2">
-          <div class="card" onclick="openTool('bio')">
-            <i class="fas fa-search tool-icon text-red-400"></i>
-            <span class="tool-name">Cek Bio</span>
-          </div>
-          <div class="card" onclick="openTool('nomor')">
-            <i class="fas fa-phone tool-icon text-blue-400"></i>
-            <span class="tool-name">Cek Nomor</span>
-          </div>
-          <div class="card" onclick="openTool('repe')">
-            <i class="fas fa-star tool-icon text-yellow-400"></i>
-            <span class="tool-name">Cek Repe</span>
-          </div>
-          <div class="card" onclick="openTool('fix')">
-            <i class="fas fa-wrench tool-icon text-green-400"></i>
-            <span class="tool-name">Fix Nomor</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- CEK BIO -->
-      <div id="page-bio" class="page">
-        <button class="back-btn" onclick="backToMenu()">
-          <i class="fas fa-arrow-left"></i> Kembali
-        </button>
-        <h2 class="card-title">Cek Bio Massal</h2>
-        <div class="card">
-          <textarea id="bio-input" rows="3" placeholder="Masukkan nomor (satu per baris atau koma)"></textarea>
-          <input type="file" id="bio-file" accept=".txt,.xlsx" onchange="uploadFile(this, 'bio-input')" class="text-xs mb-3">
-          <button class="btn btn-primary btn-sm" onclick="startCek('bio')">
-            <i class="fas fa-rocket"></i> Mulai Cek
-          </button>
-          <div class="mt-4">
-            <div class="progress-info">
-              <span id="bio-progress-text">0/0</span>
-              <span id="bio-progress-percent">0%</span>
-            </div>
-            <div class="progress-bar"><div id="bio-progress-fill" class="progress-fill"></div></div>
-          </div>
-        </div>
-        <div id="bio-results"></div>
-      </div>
-
-      <!-- CEK NOMOR -->
-      <div id="page-nomor" class="page">
-        <button class="back-btn" onclick="backToMenu()">
-          <i class="fas fa-arrow-left"></i> Kembali
-        </button>
-        <h2 class="card-title">Cek Nomor Terdaftar</h2>
-        <div class="card">
-          <textarea id="nomor-input" rows="3" placeholder="Masukkan nomor..."></textarea>
-          <button class="btn btn-primary btn-sm" onclick="startCek('nomor')">
-            <i class="fas fa-rocket"></i> Mulai Cek
-          </button>
-          <div class="mt-4">
-            <div class="progress-info">
-              <span id="nomor-progress-text">0/0</span>
-              <span id="nomor-progress-percent">0%</span>
-            </div>
-            <div class="progress-bar"><div id="nomor-progress-fill" class="progress-fill"></div></div>
-          </div>
-        </div>
-        <div class="grid-2 mt-3">
-          <div class="card p-3">
-            <h3 class="text-green-400 text-sm font-bold mb-2"><i class="fas fa-check-circle"></i> Aktif</h3>
-            <div id="nomor-registered" class="text-xs max-h-60 overflow-y-auto"></div>
-          </div>
-          <div class="card p-3">
-            <h3 class="text-red-400 text-sm font-bold mb-2"><i class="fas fa-times-circle"></i> Mati</h3>
-            <div id="nomor-unregistered" class="text-xs max-h-60 overflow-y-auto"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CEK REPE -->
-      <div id="page-repe" class="page">
-        <button class="back-btn" onclick="backToMenu()">
-          <i class="fas fa-arrow-left"></i> Kembali
-        </button>
-        <h2 class="card-title">Cek Repe / Cantik</h2>
-        <div class="card">
-          <textarea id="repe-input" rows="3" placeholder="Masukkan nomor..."></textarea>
-          <button class="btn btn-primary btn-sm" onclick="startCek('repe')">
-            <i class="fas fa-rocket"></i> Cek Repe
-          </button>
-          <p class="text-xs text-muted mt-2">*Menggunakan engine Cek Bio untuk mendeteksi persentase repe.</p>
-        </div>
-        <div id="repe-results" class="mt-3"></div>
-      </div>
-
-      <!-- FIX NOMOR -->
-      <div id="page-fix" class="page">
-        <button class="back-btn" onclick="backToMenu()">
-          <i class="fas fa-arrow-left"></i> Kembali
-        </button>
-        <h2 class="card-title">Fix / Banding Email</h2>
-        <div class="card">
-          <input type="text" id="fix-input" placeholder="628xxxxxxxxxx">
-          <button class="btn btn-primary btn-sm mt-3" onclick="fixNomor()">
-            <i class="fas fa-paper-plane"></i> Kirim Email Banding
-          </button>
-          <div id="fix-status" class="alert hidden mt-3"></div>
-        </div>
-        <div class="card mt-3">
-          <h3 class="font-bold text-sm mb-2"><i class="fas fa-copy"></i> Banding Manual</h3>
-          <button class="btn btn-secondary btn-sm" onclick="generateBanding()">
-            <i class="fas fa-magic"></i> Buat Pesan Banding
-          </button>
-          <pre id="banding-text" class="hidden mt-3 bg-slate-900 p-3 rounded-lg text-xs whitespace-pre-wrap text-green-400 border border-slate-700"></pre>
-        </div>
-      </div>
-
-      <!-- ADMIN / SETTINGS -->
-      <div id="page-admin" class="page">
-        <h2 class="card-title"><i class="fas fa-cog text-primary"></i> Admin Panel</h2>
-        
-        <div class="card">
-          <h3 class="font-bold text-sm mb-3"><i class="fas fa-sliders-h"></i> Settings Bot</h3>
-          <div class="form-group">
-            <label>Delay Cek (ms)</label>
-            <input type="number" id="set-delay" min="500" step="100">
-          </div>
-          <div class="form-group">
-            <label>Email SMTP</label>
-            <input type="email" id="set-email" placeholder="email@gmail.com">
-          </div>
-          <div class="form-group">
-            <label>App Password / SMTP Password</label>
-            <input type="password" id="set-pass" placeholder="xxxx xxxx xxxx xxxx">
-          </div>
-          <div class="form-group">
-            <label>SMTP Host</label>
-            <input type="text" id="set-smtp-host" placeholder="smtp.gmail.com">
-          </div>
-          <div class="form-group">
-            <label>SMTP Port</label>
-            <input type="number" id="set-smtp-port" placeholder="587">
-          </div>
-          <button class="btn btn-primary btn-sm" onclick="saveSettings()">
-            <i class="fas fa-save"></i> Simpan Settings
-          </button>
-        </div>
-
-        <div class="card">
-          <h3 class="font-bold text-sm mb-3"><i class="fas fa-envelope"></i> Template Email (MT)</h3>
-          <div class="form-group">
-            <label>Email Tujuan</label>
-            <input type="email" id="mt-to" placeholder="android@support.whatsapp.com">
-          </div>
-          <div class="form-group">
-            <label>Subjek</label>
-            <input type="text" id="mt-subject" placeholder="Subjek email">
-          </div>
-          <div class="form-group">
-            <label>Isi (gunakan {nomor} untuk placeholder nomor)</label>
-            <textarea id="mt-body" rows="3" placeholder="Isi email..."></textarea>
-          </div>
-          <button class="btn btn-secondary btn-sm" onclick="addMt()">
-            <i class="fas fa-plus"></i> Tambah MT
-          </button>
-          <div id="mt-list" class="mt-3 space-y-2"></div>
-        </div>
-
-        <button class="btn btn-danger mt-3" onclick="logout()">
-          <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
-      </div>
-    </div>
-
-    <div class="app-nav">
-      <button class="nav-item active" onclick="showPage('home', this)">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
-      </button>
-      <button class="nav-item" onclick="showPage('tools', this)">
-        <i class="fas fa-tools"></i>
-        <span>Tools</span>
-      </button>
-      <button class="nav-item" onclick="showPage('admin', this)">
-        <i class="fas fa-cog"></i>
-        <span>Admin</span>
-      </button>
+    <div id="header-wa-status" class="header-status offline">
+      <span class="dot"></span> OFFLINE
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="app-content">
+    <!-- HOME (gabungan QR + Pairing) -->
+    <div id="page-home" class="page active">
+      <div class="card text-center">
+        <h2 class="card-title"><i class="fab fa-whatsapp text-green-400"></i> Koneksi WhatsApp</h2>
+        
+        <!-- QR Area -->
+        <div class="qr-area">
+          <img id="qr-image" class="qr-image hidden" alt="QR Code">
+          <div id="qr-placeholder" class="qr-placeholder">
+            <i class="fas fa-qrcode fa-2x"></i>
+            <p>Tekan tombol di bawah untuk mulai</p>
+          </div>
+        </div>
 
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  <script src="/script.js"></script>
+        <!-- Tombol utama start session -->
+        <button id="btn-connect" class="btn btn-primary mb-3" onclick="startWASession()">
+          <i class="fas fa-plug"></i> Hubungkan WhatsApp
+        </button>
+
+        <!-- Form Pairing (muncul setelah session siap) -->
+        <div id="pairing-form" class="hidden mt-3">
+          <div class="flex gap-3">
+            <input type="text" id="pairing-phone" placeholder="628xxxxxxxxxx" class="flex-1">
+            <button class="btn btn-secondary" onclick="requestPairingCode()">
+              <i class="fas fa-key"></i> Dapatkan Kode
+            </button>
+          </div>
+          <div id="pairing-result" class="pairing-code hidden mt-2"></div>
+        </div>
+
+        <!-- Tombol disconnect -->
+        <button class="btn btn-danger mt-3" onclick="disconnectWA()">
+          <i class="fas fa-power-off"></i> Putuskan Koneksi
+        </button>
+      </div>
+    </div>
+
+    <!-- TOOLS MENU (sama seperti sebelumnya) -->
+    <div id="page-tools" class="page">
+      <h2 class="card-title"><i class="fas fa-tools text-primary"></i> Peralatan</h2>
+      <div class="grid-2">
+        <div class="card" onclick="openTool('bio')">
+          <i class="fas fa-search tool-icon text-red-400"></i>
+          <span class="tool-name">Cek Bio</span>
+        </div>
+        <div class="card" onclick="openTool('nomor')">
+          <i class="fas fa-phone tool-icon text-blue-400"></i>
+          <span class="tool-name">Cek Nomor</span>
+        </div>
+        <div class="card" onclick="openTool('repe')">
+          <i class="fas fa-star tool-icon text-yellow-400"></i>
+          <span class="tool-name">Cek Repe</span>
+        </div>
+        <div class="card" onclick="openTool('fix')">
+          <i class="fas fa-wrench tool-icon text-green-400"></i>
+          <span class="tool-name">Fix Nomor</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CEK BIO -->
+    <div id="page-bio" class="page">
+      <button class="back-btn" onclick="backToMenu()"><i class="fas fa-arrow-left"></i> Kembali</button>
+      <h2 class="card-title">Cek Bio Massal</h2>
+      <div class="card">
+        <textarea id="bio-input" rows="3" placeholder="Masukkan nomor (satu per baris atau koma)"></textarea>
+        <input type="file" id="bio-file" accept=".txt,.xlsx" onchange="uploadFile(this, 'bio-input')" class="text-xs mb-3">
+        <button class="btn btn-primary btn-sm" onclick="startCek('bio')">Mulai Cek</button>
+        <div class="mt-4">
+          <div class="progress-info"><span id="bio-progress-text">0/0</span><span id="bio-progress-percent">0%</span></div>
+          <div class="progress-bar"><div id="bio-progress-fill" class="progress-fill"></div></div>
+        </div>
+      </div>
+      <div id="bio-results"></div>
+    </div>
+
+    <!-- CEK NOMOR -->
+    <div id="page-nomor" class="page">
+      <button class="back-btn" onclick="backToMenu()"><i class="fas fa-arrow-left"></i> Kembali</button>
+      <h2 class="card-title">Cek Nomor Terdaftar</h2>
+      <div class="card">
+        <textarea id="nomor-input" rows="3"></textarea>
+        <button class="btn btn-primary btn-sm" onclick="startCek('nomor')">Mulai Cek</button>
+        <div class="mt-4">
+          <div class="progress-info"><span id="nomor-progress-text">0/0</span><span id="nomor-progress-percent">0%</span></div>
+          <div class="progress-bar"><div id="nomor-progress-fill" class="progress-fill"></div></div>
+        </div>
+      </div>
+      <div class="grid-2 mt-3">
+        <div class="card"><h3 class="text-green-400">Aktif</h3><div id="nomor-registered"></div></div>
+        <div class="card"><h3 class="text-red-400">Mati</h3><div id="nomor-unregistered"></div></div>
+      </div>
+    </div>
+
+    <!-- CEK REPE -->
+    <div id="page-repe" class="page">
+      <button class="back-btn" onclick="backToMenu()"><i class="fas fa-arrow-left"></i> Kembali</button>
+      <h2 class="card-title">Cek Repe</h2>
+      <div class="card">
+        <textarea id="repe-input" rows="3"></textarea>
+        <button class="btn btn-primary btn-sm" onclick="startCek('repe')">Cek Repe</button>
+      </div>
+      <div id="repe-results"></div>
+    </div>
+
+    <!-- FIX NOMOR -->
+    <div id="page-fix" class="page">
+      <button class="back-btn" onclick="backToMenu()"><i class="fas fa-arrow-left"></i> Kembali</button>
+      <h2 class="card-title">Fix / Banding</h2>
+      <div class="card">
+        <input type="text" id="fix-input" placeholder="628xxxxxxxxxx">
+        <button class="btn btn-primary btn-sm mt-3" onclick="fixNomor()">Kirim Email Banding</button>
+        <div id="fix-status" class="hidden"></div>
+      </div>
+      <div class="card">
+        <button class="btn btn-secondary btn-sm" onclick="generateBanding()">Buat Pesan Banding</button>
+        <pre id="banding-text" class="hidden mt-3 bg-slate-900 p-3 rounded text-xs"></pre>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="page-admin" class="page">
+      <h2 class="card-title">Admin Panel</h2>
+      <div class="card">
+        <label>Delay Cek (ms)</label><input type="number" id="set-delay">
+        <label>Email SMTP</label><input type="email" id="set-email">
+        <label>Password</label><input type="password" id="set-pass">
+        <label>SMTP Host</label><input type="text" id="set-smtp-host">
+        <label>SMTP Port</label><input type="number" id="set-smtp-port">
+        <button class="btn btn-primary btn-sm" onclick="saveSettings()">Simpan</button>
+      </div>
+      <div class="card">
+        <h3>Template Email</h3>
+        <input type="email" id="mt-to" placeholder="Tujuan">
+        <input type="text" id="mt-subject" placeholder="Subjek">
+        <textarea id="mt-body" rows="3" placeholder="Isi email, gunakan {nomor}"></textarea>
+        <button class="btn btn-secondary btn-sm" onclick="addMt()">Tambah MT</button>
+        <div id="mt-list"></div>
+      </div>
+      <button class="btn btn-danger" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="app-nav">
+    <button class="nav-item active" onclick="showPage('home', this)"><i class="fas fa-home"></i><span>Home</span></button>
+    <button class="nav-item" onclick="showPage('tools', this)"><i class="fas fa-tools"></i><span>Tools</span></button>
+    <button class="nav-item" onclick="showPage('admin', this)"><i class="fas fa-cog"></i><span>Admin</span></button>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+  // ======================= SOCKET.IO =======================
+  const socket = io();
+  let currentSessionActive = false;
+
+  // Helper UI
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.style.background = isError ? '#7f1a1a' : '#0f172a';
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+  }
+
+  function updateWAStatus(status, number = '') {
+    const el = document.getElementById('header-wa-status');
+    if (status === 'connected') {
+      el.innerHTML = `<span class="dot"></span> CONNECTED (${number})`;
+      el.className = 'header-status online';
+      currentSessionActive = true;
+      document.getElementById('pairing-form').classList.remove('hidden');
+    } else {
+      el.innerHTML = `<span class="dot"></span> OFFLINE`;
+      el.className = 'header-status offline';
+      currentSessionActive = false;
+      document.getElementById('pairing-form').classList.add('hidden');
+      document.getElementById('qr-image').classList.add('hidden');
+      document.getElementById('qr-placeholder').classList.remove('hidden');
+      document.getElementById('pairing-result').classList.add('hidden');
+    }
+  }
+
+  // QR Event
+  socket.on('wa-qr', (qrDataUrl) => {
+    const img = document.getElementById('qr-image');
+    img.src = qrDataUrl;
+    img.classList.remove('hidden');
+    document.getElementById('qr-placeholder').classList.add('hidden');
+  });
+
+  socket.on('wa-status', (data) => {
+    updateWAStatus(data.status, data.number);
+  });
+
+  socket.on('pairing-code', (code) => {
+    const pairDiv = document.getElementById('pairing-result');
+    pairDiv.innerHTML = `<i class="fas fa-key"></i> Kode Pairing: <strong>${code}</strong>`;
+    pairDiv.classList.remove('hidden');
+    setTimeout(() => pairDiv.classList.add('hidden'), 30000);
+    showToast(`Kode pairing: ${code}`);
+  });
+
+  socket.on('error-msg', (msg) => {
+    showToast(msg, true);
+  });
+
+  // Progres & Hasil tools (bio, nomor, fix)
+  socket.on('bio-progress', (data) => {
+    document.getElementById('bio-progress-text').innerText = `${data.current}/${data.total}`;
+    const percent = (data.current/data.total)*100;
+    document.getElementById('bio-progress-percent').innerText = Math.round(percent)+'%';
+    document.getElementById('bio-progress-fill').style.width = percent+'%';
+  });
+  socket.on('bio-result', (res) => {
+    let html = '';
+    res.forEach(r => {
+      if(r.registered) html += `<div class="card text-sm"><b>${r.number}</b> ✅ Bio: ${r.bio || '-'} | Repe: ${r.repe ? 'Ya' : 'Tdk'} | Verif: ${r.verifPercent}% | Jam: ${r.jamPercentage}%</div>`;
+      else html += `<div class="card text-sm"><b>${r.number}</b> ❌ Tidak terdaftar</div>`;
+    });
+    document.getElementById('bio-results').innerHTML = html;
+  });
+
+  socket.on('nomor-progress', (data) => {
+    document.getElementById('nomor-progress-text').innerText = `${data.current}/${data.total}`;
+    const percent = (data.current/data.total)*100;
+    document.getElementById('nomor-progress-percent').innerText = Math.round(percent)+'%';
+    document.getElementById('nomor-progress-fill').style.width = percent+'%';
+  });
+  socket.on('nomor-result', (res) => {
+    document.getElementById('nomor-registered').innerHTML = res.registered.map(n => `<div>${n}</div>`).join('');
+    document.getElementById('nomor-unregistered').innerHTML = res.notRegistered.map(n => `<div>${n}</div>`).join('');
+  });
+
+  socket.on('fix-result', (res) => {
+    const statusDiv = document.getElementById('fix-status');
+    statusDiv.classList.remove('hidden');
+    statusDiv.className = `alert ${res.success ? 'alert-success' : 'alert-error'}`;
+    statusDiv.innerHTML = res.message;
+    setTimeout(() => statusDiv.classList.add('hidden'), 5000);
+  });
+
+  // ======================= FUNGSI GLOBAL =======================
+  window.startWASession = function() {
+    if(currentSessionActive) {
+      showToast('Sesi sudah aktif, tidak perlu connect ulang');
+      return;
+    }
+    socket.emit('connect-wa');
+    showToast('Memulai sesi WhatsApp, tunggu QR...');
+  };
+
+  window.requestPairingCode = async function() {
+    const phone = document.getElementById('pairing-phone').value.trim();
+    if(!phone) {
+      showToast('Masukkan nomor telepon', true);
+      return;
+    }
+    if(!currentSessionActive) {
+      showToast('Sesi belum terhubung, tekan "Hubungkan WhatsApp" dulu', true);
+      return;
+    }
+    socket.emit('get-pairing', phone);
+    showToast('Meminta kode pairing...');
+  };
+
+  window.disconnectWA = function() {
+    socket.emit('disconnect-wa');
+    showToast('Memutuskan koneksi...');
+  };
+
+  // Tools navigation (sederhana, Anda bisa lengkapi sesuai kebutuhan)
+  window.showPage = function(pageId, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(`page-${pageId}`).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+  };
+  window.openTool = function(tool) {
+    showPage(tool, null);
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  };
+  window.backToMenu = function() {
+    showPage('tools', null);
+  };
+
+  // Placeholder untuk fungsi lain (silahkan lengkapi sesuai kebutuhan backend)
+  window.uploadFile = (input, targetId) => { /* implement upload ke /upload-file */ };
+  window.startCek = (type) => {
+    if(type === 'bio') {
+      const numbers = document.getElementById('bio-input').value.split(/[\n,]+/).filter(v=>v.trim());
+      if(!numbers.length) return showToast('Masukkan nomor', true);
+      socket.emit('cek-bio', numbers);
+    } else if(type === 'nomor') {
+      const numbers = document.getElementById('nomor-input').value.split(/[\n,]+/).filter(v=>v.trim());
+      socket.emit('cek-nomor', numbers);
+    } else if(type === 'repe') {
+      // reuse cek-bio tapi tampilkan hanya repe
+      const numbers = document.getElementById('repe-input').value.split(/[\n,]+/).filter(v=>v.trim());
+      socket.emit('cek-bio', numbers);
+      socket.once('bio-result', (res) => {
+        let html = '';
+        res.forEach(r => html += `<div class="card">${r.number} - Repe: ${r.repe?'Ya':'Tidak'} | Verif: ${r.verifPercent}% | Jam: ${r.jamPercentage}%</div>`);
+        document.getElementById('repe-results').innerHTML = html;
+      });
+    }
+  };
+  window.fixNomor = () => {
+    const num = document.getElementById('fix-input').value.trim();
+    if(!num) return showToast('Masukkan nomor', true);
+    socket.emit('fix-nomor', num);
+  };
+  window.generateBanding = async () => {
+    const res = await fetch('/api/dashboard/generate-banding');
+    const data = await res.json();
+    const pre = document.getElementById('banding-text');
+    pre.innerText = data.banding || 'Gagal generate';
+    pre.classList.remove('hidden');
+  };
+  window.saveSettings = () => { /* panggil POST /settings */ };
+  window.addMt = () => { /* POST /mt */ };
+  window.logout = () => { window.location.href = '/login'; };
+
+  // Saat load, cek status dari server (opsional)
+  socket.on('connect', () => {
+    console.log('Socket connected');
+  });
+</script>
 </body>
 </html>
